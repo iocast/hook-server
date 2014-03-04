@@ -162,15 +162,24 @@ app.config.puller = Puller(app.config.mailer)
 def pull():
     branch = ""
     repo = None
+    data = None
     
-    if "ref" in bottle.request.json:
-        branch = bottle.request.json["ref"].split('/')[-1]
-    
-    if "repository" in bottle.request.json:
-        if "name" in bottle.request.json["repository"]:
-            if bottle.request.json["repository"]["name"] in config["repos"]:
-                repo = config["repos"][bottle.request.json["repository"]["name"]]
-                if branch in repo["branches"]:
-                    app.config.puller.branch(repo, branch)
-    print bottle.request.json
+    if bottle.request.json:
+        data = bottle.request.json
+    elif bottle.request.forms.get('payload', None):
+        data = json.loads(abc)
+
+    print data
+
+    if data:
+        if "ref" in data:
+            branch = data["ref"].split('/')[-1]
+
+        if "repository" in data:
+            if "name" in data["repository"]:
+                if data["repository"]["name"] in config["repos"]:
+                    repo = config["repos"][data["repository"]["name"]]
+                    if branch in repo["branches"]:
+                        print "ok"
+                    #app.config.puller.branch(repo, branch)
 
