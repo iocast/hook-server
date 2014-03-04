@@ -1,28 +1,27 @@
-import bottle, json, subprocess, re
-
+import bottle, json, re, subprocess, datetime
+from threading import Thread
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from smtplib import SMTP, SMTP_SSL
 
 class Puller(object):
     def __init__(self, mailer):
         self._mailer = mailer
         self._threads = []
     
-    def branch(self, repo, branch):
-        thread = Thread(target=self._pull_branch, args=(repo, branch, app.config.mailer))
+    def branch(self, repo, name, branch, tmpl):
+        thread = Thread(target=self._pull_branch, args=(repo, name, branch, tmpl))
         thread.start()
         self._threads.append(thread)
     
-    def _pull_branch(self, repo, branch):
-        p = subprocess.Popen(['git', 'pull'], cwd=repo["branches"][branch][local], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = p.communicate()
-        print "------------"
-        print ""
-        print out
-        print "------------"
-        print err
-        print ""
-        print "------------"
-        msgtext = out + "<br/>" + err
-        self._mailer.send_email(repo["notification"].split(","), "abc", msgtext)
+    def _pull_branch(self, repo, name, branch, tmpl):
+        now = datetime.datetime.now()
+        out, err = subprocess.Popen(['git', 'pull', repo["remote"]], cwd=repo["branches"][branch]["local"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        
+        if "template" in repo:
+            tmpl = repo["template"]
+        email_text = bottle.template(tmpl, repository=repo, name=name, branch=branch, output=out.splitlines(), error=err.splitlines(), now=now)
+        self._mailer.send_email(repo["notification"].split(","), "Did a git pull for {repo} on {branch}".format(repo = name, branch = branch), email_text)
     
     
     def join(self):
@@ -103,7 +102,6 @@ class Mailer(object):
         part = MIMEText(email_text, 'html')
         msg.attach(part)
         
-        log.debug("Sending email using %s" % self._conf['fqdn'])
         thread = Thread(target=self._send, args=(email_addrs, msg.as_string()))
         thread.start()
         self._threads.append(thread)
@@ -115,29 +113,25 @@ class Mailer(object):
         
         try:
             if proto == 'ssl':
-                log.debug("Setting up SSL")
                 session = SMTP_SSL(self._conf['fqdn'], self._conf['port'])
             else:
                 session = SMTP(self._conf['fqdn'], self._conf['port'])
             
             if proto == 'starttls':
-                log.debug('Sending EHLO and STARTTLS')
                 session.ehlo()
                 session.starttls()
                 session.ehlo()
             
             if self._conf['user'] is not None:
-                log.debug('Performing login')
                 session.login(self._conf['user'], self._conf['pass'])
             
-            log.debug('Sending')
             session.sendmail(self.sender, email_addrs, msg)
             session.quit()
-            log.info('Email sent')
-        
+
         except Exception as e:  # pragma: no cover
-            log.error("Error sending email: %s" % e, exc_info=True)
-    
+            ''' '''
+            print str(e)
+
     def join(self):
         """Flush email queue by waiting the completion of the existing threads
             
@@ -158,28 +152,34 @@ app = bottle.Bottle()
 app.config.mailer = Mailer(config["mailer"]["sender"], config["mailer"]["smtp"])
 app.config.puller = Puller(app.config.mailer)
 
-@app.post('/pull')
+@app.post('/push')
 def pull():
-    branch = ""
+    branch = None
     repo = None
     data = None
     
     if bottle.request.json:
         data = bottle.request.json
     elif bottle.request.forms.get('payload', None):
-        data = json.loads(abc)
-
-    print data
+        data = json.loads(bottle.request.forms.get('payload'))
 
     if data:
         if "ref" in data:
             branch = data["ref"].split('/')[-1]
+        elif "commits" in data and len(data["commits"]) > 0:
+            branch = data["commits"][0]["branch"]
 
-        if "repository" in data:
+        if branch and "repository" in data:
             if "name" in data["repository"]:
                 if data["repository"]["name"] in config["repos"]:
                     repo = config["repos"][data["repository"]["name"]]
                     if branch in repo["branches"]:
-                        print "ok"
-                    #app.config.puller.branch(repo, branch)
+                        app.config.puller.branch(repo, data["repository"]["name"], branch, config["template"])
+
+
+
+@app.route('/')
+@bottle.view('repo_overview.tpl')
+def index():
+    return dict(config = config)
 

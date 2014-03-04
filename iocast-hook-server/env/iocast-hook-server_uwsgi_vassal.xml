@@ -1,0 +1,22 @@
+<!--
+ uWSGI configuration file (vassal)
+ -->
+<uwsgi>
+    <plugins>python</plugins>
+	<vhost />
+	<master />
+	<vacuum />
+	<enable-threads />
+	<lazy />
+	<chmod-socket>666</chmod-socket>
+	<socket>/tmp/uwsgi.%n.sock</socket>
+	<uid>www-data</uid>
+	<gid>www-data</gid>
+	<virtualenv>/opt/virtualenv/%n</virtualenv>
+	<pythonpath>%d../%n</pythonpath>
+	<chdir>%d../%n</chdir>
+	<module>%n_wsgi</module>
+	<pidfile>/var/run/uwsgi/%n.pid</pidfile>
+	<touch-reload>%d../%n</touch-reload>
+	<daemonize>/var/log/uwsgi/%n.log</daemonize>
+</uwsgi>

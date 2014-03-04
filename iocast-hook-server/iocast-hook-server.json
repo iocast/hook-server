@@ -1,17 +1,29 @@
 {
 	"mailer": {
-		"sender": "irl-plus-s-003@noreply.ethz.ch",
-		"smtp": "starttls://irlit:8ung-los@mail.ethz.ch:587"
+		"sender": "support@example.com",
+		"smtp": "starttls://user:password@mail.example.com:587"
 	},
+	"template": "pull_report.tpl",
 	"repos": {
-		"oesl-check": {
-			"notification": "irl-support@ethz.ch",
-			"remote": "git@bitbucket.org:ethzplus/oesl-check.git",
+		"iocast-hook-server": {
+			"notification": "iocast@me.com",
+			"remote": "https://user:password@github.com/iocast/iocast-hook-server.git",
 			"branches": {
 				"master": {
-					"local": "/opt/repos/oesl-check"
+					"local": "/opt/repos/iocast-hook-server"
+				}
+			}
+		},
+		"repo2": {
+			"notification": "support@example.com",
+			"template": "repo2_report.tpl",
+			"remote": "https://user:password@bitbucket.org/user/repo1.git",
+			"branches": {
+				"master": {
+					"local": "/opt/repos/repo1"
 				}
 			}
 		}
+
 	}
 }
