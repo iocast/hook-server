@@ -1,0 +1,15 @@
+{
+	"email-notification": "irl-support@ethz.ch",
+	"email-from": "irl-plus-s-003@noreply.ethz.ch",
+	"repos": {
+		"oesl-check": {
+			"email-notification": "irl-support@ethz.ch",
+			"remote": "git@bitbucket.org:ethzplus/oesl-check.git",
+			"branches": {
+				"master": {
+					"local": "/opt/repos/oesl-check"
+				}
+			}
+		}
+	}
+}
