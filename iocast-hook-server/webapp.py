@@ -1,25 +1,40 @@
-import bottle, json
+import bottle, json, subprocess, re
 
-json.load(open('./iocast-hook-server.json'))
 
-app = bottle.Bottle()
+class Puller(object):
+    def __init__(self, mailer):
+        self._mailer = mailer
+        self._threads = []
+    
+    def branch(self, repo, branch):
+        thread = Thread(target=self._pull_branch, args=(repo, branch, app.config.mailer))
+        thread.start()
+        self._threads.append(thread)
+    
+    def _pull_branch(self, repo, branch):
+        p = subprocess.Popen(['git', 'pull'], cwd=repo["branches"][branch][local], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        print "------------"
+        print ""
+        print out
+        print "------------"
+        print err
+        print ""
+        print "------------"
+        msgtext = out + "<br/>" + err
+        self._mailer.send_email(repo["notification"].split(","), "abc", msgtext)
+    
+    
+    def join(self):
+        return [t.join(self.join_timeout) for t in self._threads]
+    
+    def __del__(self):
+        self.join()
 
-@app.post('/pull')
-def pull():
-    print bottle.request.json
 
 
 class Mailer(object):
-    """ derived from bottle-cork """
-    
     def __init__(self, sender, smtp_url, join_timeout=5):
-        """Send emails asyncronously
-            
-            :param sender: Sender email address
-            :type sender: str.
-            :param smtp_server: SMTP server
-            :type smtp_server: str.
-            """
         self.sender = sender
         self.join_timeout = join_timeout
         self._threads = []
@@ -78,39 +93,22 @@ class Mailer(object):
         
         return d
     
-    def send_email(self, email_addr, subject, email_text):
-        """Send an email
-            
-            :param email_addr: email address
-            :type email_addr: str.
-            :param subject: subject
-            :type subject: str.
-            :param email_text: email text
-            :type email_text: str.
-            :raises: AAAException if smtp_server and/or sender are not set
-            """
+    def send_email(self, email_addrs, subject, email_text):
         if not (self._conf['fqdn'] and self.sender):
-            raise AAAException("SMTP server or sender not set")
+            raise NameError("SMTP server or sender not set")
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
         msg['From'] = self.sender
-        msg['To'] = email_addr
+        msg['To'] = ", ".join(email_addrs)
         part = MIMEText(email_text, 'html')
         msg.attach(part)
         
         log.debug("Sending email using %s" % self._conf['fqdn'])
-        thread = Thread(target=self._send, args=(email_addr, msg.as_string()))
+        thread = Thread(target=self._send, args=(email_addrs, msg.as_string()))
         thread.start()
         self._threads.append(thread)
     
-    def _send(self, email_addr, msg):
-        """Deliver an email using SMTP
-            
-            :param email_addr: recipient
-            :type email_addr: str.
-            :param msg: email text
-            :type msg: str.
-            """
+    def _send(self, email_addrs, msg):
         proto = self._conf['proto']
         assert proto in ('smtp', 'starttls', 'ssl'), \
             "Incorrect protocol: %s" % proto
@@ -133,7 +131,7 @@ class Mailer(object):
                 session.login(self._conf['user'], self._conf['pass'])
             
             log.debug('Sending')
-            session.sendmail(self.sender, email_addr, msg)
+            session.sendmail(self.sender, email_addrs, msg)
             session.quit()
             log.info('Email sent')
         
@@ -150,3 +148,29 @@ class Mailer(object):
     def __del__(self):
         """Class destructor: wait for threads to terminate within a timeout"""
         self.join()
+
+
+
+
+
+config = json.load(open('./iocast-hook-server.json'))
+app = bottle.Bottle()
+app.config.mailer = Mailer(config["mailer"]["sender"], config["mailer"]["smtp"])
+app.config.puller = Puller(app.config.mailer)
+
+@app.post('/pull')
+def pull():
+    branch = ""
+    repo = None
+    
+    if "ref" in bottle.request.json:
+        branch = bottle.request.json["ref"].split('/')[-1]
+    
+    if "repository" in bottle.request.json:
+        if "name" in bottle.request.json["repository"]:
+            if bottle.request.json["repository"]["name"] in config["repos"]:
+                repo = config["repos"][bottle.request.json["repository"]["name"]]
+                if branch in repo["branches"]:
+                    app.config.puller.branch(repo, branch)
+    print bottle.request.json
+

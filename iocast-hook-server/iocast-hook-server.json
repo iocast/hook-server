@@ -1,9 +1,11 @@
 {
-	"email-notification": "irl-support@ethz.ch",
-	"email-from": "irl-plus-s-003@noreply.ethz.ch",
+	"mailer": {
+		"sender": "irl-plus-s-003@noreply.ethz.ch",
+		"smtp": "starttls://irlit:8ung-los@mail.ethz.ch:587"
+	},
 	"repos": {
 		"oesl-check": {
-			"email-notification": "irl-support@ethz.ch",
+			"notification": "irl-support@ethz.ch",
 			"remote": "git@bitbucket.org:ethzplus/oesl-check.git",
 			"branches": {
 				"master": {
