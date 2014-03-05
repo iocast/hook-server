@@ -169,12 +169,12 @@ def pull():
     repo = None
     data = None
     
-    print bottle.request.body.read()
-    
     if bottle.request.json:
         data = bottle.request.json
     elif bottle.request.forms.get('payload', None):
         data = json.loads(bottle.request.forms.get('payload'))
+    
+    print data
 
     if data:
         if "ref" in data:
