@@ -187,9 +187,9 @@ def pull():
             name = data["repository"]["name"]
         
         if branch and name and name in config["repos"]:
-            repo = config["repos"][data["repository"]["name"]]
+            repo = config["repos"][name]
             if branch in repo["branches"]:
-                app.config.puller.branch(repo, data["repository"]["name"], branch, config["template"])
+                app.config.puller.branch(repo, name, branch, config["template"])
 
 
 
