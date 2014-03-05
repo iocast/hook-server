@@ -166,6 +166,7 @@ app.config.puller = Puller(app.config.mailer)
 @app.post('/push')
 def pull():
     branch = None
+    name = None
     repo = None
     data = None
     
@@ -174,20 +175,21 @@ def pull():
     elif bottle.request.forms.get('payload', None):
         data = json.loads(bottle.request.forms.get('payload'))
     
-    print data
-
     if data:
         if "ref" in data:
             branch = data["ref"].split('/')[-1]
         elif "commits" in data and len(data["commits"]) > 0:
             branch = data["commits"][0]["branch"]
-
-        if branch and "repository" in data:
-            if "name" in data["repository"]:
-                if data["repository"]["name"] in config["repos"]:
-                    repo = config["repos"][data["repository"]["name"]]
-                    if branch in repo["branches"]:
-                        app.config.puller.branch(repo, data["repository"]["name"], branch, config["template"])
+        
+        if "slug" in data["repository"]:
+            name = data["repository"]["slug"]
+        elif "name" in data["repository"]:
+            name = data["repository"]["name"]
+        
+        if branch and name and name in config["repos"]:
+            repo = config["repos"][data["repository"]["name"]]
+            if branch in repo["branches"]:
+                app.config.puller.branch(repo, data["repository"]["name"], branch, config["template"])
 
 
 
