@@ -16,11 +16,22 @@ class Puller(object):
     
     def _pull_branch(self, repo, name, branch, tmpl):
         now = datetime.datetime.now()
+        
+        output = []
+        error = []
+        
         out, err = subprocess.Popen(['git', 'pull', repo["remote"]], cwd=repo["branches"][branch]["local"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        output.extend(out.splitlines())
+        error.extend(err.splitlines())
+        
+        if "post-script" in repo["branches"][branch]:
+            out, err = subprocess.Popen([repo["branches"][branch]["post-script"]], cwd=repo["branches"][branch]["local"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, , shell=True).communicate()
+            output.extend(out.splitlines())
+            error.extend(err.splitlines())
         
         if "template" in repo:
             tmpl = repo["template"]
-        email_text = bottle.template(tmpl, repository=repo, name=name, branch=branch, output=out.splitlines(), error=err.splitlines(), now=now)
+        email_text = bottle.template(tmpl, repository=repo, name=name, branch=branch, output=output, error=error, now=now)
         self._mailer.send_email(repo["notification"].split(","), "Did a git pull for {repo} on {branch}".format(repo = name, branch = branch), email_text)
     
     

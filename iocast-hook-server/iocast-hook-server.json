@@ -20,7 +20,8 @@
 			"remote": "https://user:password@bitbucket.org/user/repo1.git",
 			"branches": {
 				"master": {
-					"local": "/opt/repos/repo1"
+					"local": "/opt/repos/repo1",
+					"post-script": "scripts/post-processing.sh"
 				}
 			}
 		}
