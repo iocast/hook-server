@@ -169,6 +169,8 @@ def pull():
     repo = None
     data = None
     
+    print bottle.request.data
+    
     if bottle.request.json:
         data = bottle.request.json
     elif bottle.request.forms.get('payload', None):
