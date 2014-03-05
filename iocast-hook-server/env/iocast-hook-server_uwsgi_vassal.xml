@@ -19,4 +19,5 @@
 	<pidfile>/var/run/uwsgi/%n.pid</pidfile>
 	<touch-reload>%d../%n</touch-reload>
 	<daemonize>/var/log/uwsgi/%n.log</daemonize>
+	<logto>/var/log/uwsgi/%n.log</logto>
 </uwsgi>
