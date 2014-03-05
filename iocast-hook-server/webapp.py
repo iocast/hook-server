@@ -169,7 +169,7 @@ def pull():
     repo = None
     data = None
     
-    print bottle.request.data
+    print bottle.request.body.read()
     
     if bottle.request.json:
         data = bottle.request.json
