@@ -25,7 +25,7 @@ class Puller(object):
         error.extend(err.splitlines())
         
         if "post-script" in repo["branches"][branch]:
-            out, err = subprocess.Popen([repo["branches"][branch]["post-script"]], cwd=repo["branches"][branch]["local"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, , shell=True).communicate()
+            out, err = subprocess.Popen([repo["branches"][branch]["post-script"]], cwd=repo["branches"][branch]["local"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()
             output.extend(out.splitlines())
             error.extend(err.splitlines())
         
