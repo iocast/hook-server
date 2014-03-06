@@ -1,6 +1,6 @@
-# iocast-hook-server
+# hook-server
 
-iocast-hook-server is a Python server which updates a git repository triggered by a post hook comming from [GitHub](https://developer.github.com/webhooks/) or [Bitbucket](https://confluence.atlassian.com/display/BITBUCKET/Manage+Bitbucket+hooks).
+hook-server is a Python server which updates a git repository triggered by a post hook comming from [GitHub](https://developer.github.com/webhooks/) or [Bitbucket](https://confluence.atlassian.com/display/BITBUCKET/Manage+Bitbucket+hooks).
 
 ## installation
 

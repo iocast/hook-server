@@ -9,7 +9,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>iocast-hook-server</h1>
+			<h1>iocasts' hook-server</h1>
 			<p>I did a pull of repository <strong>{{name}}</strong> on branch <strong>{{branch}}</strong> on <strong>{{now.strftime('%-d, %b %Y at %-I:%M %p')}}</strong>.</p>
 			<p>It generated the following output</p>
 			<h3>Output</h3>

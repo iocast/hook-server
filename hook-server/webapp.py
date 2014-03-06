@@ -158,7 +158,7 @@ class Mailer(object):
 
 
 
-config = json.load(open('./iocast-hook-server.json'))
+config = json.load(open('./hook-server.json'))
 app = bottle.Bottle()
 app.config.mailer = Mailer(config["mailer"]["sender"], config["mailer"]["smtp"])
 app.config.puller = Puller(app.config.mailer)

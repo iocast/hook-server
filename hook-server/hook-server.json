@@ -5,12 +5,12 @@
 	},
 	"template": "pull_report.tpl",
 	"repos": {
-		"iocast-hook-server": {
+		"hook-server": {
 			"notification": "iocast@me.com",
-			"remote": "https://user:password@github.com/iocast/iocast-hook-server.git",
+			"remote": "https://user:password@github.com/iocast/hook-server.git",
 			"branches": {
 				"master": {
-					"local": "/opt/repos/iocast-hook-server"
+					"local": "/opt/repos/hook-server"
 				}
 			}
 		},
