@@ -20,7 +20,7 @@ class Puller(object):
         output = []
         error = []
         
-        out, err = subprocess.Popen(['git', 'pull', 'origin', branch, cwd=repo["branches"][branch]["local"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        out, err = subprocess.Popen(['git', 'pull', 'origin', branch], cwd=repo["branches"][branch]["local"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         output.extend(out.splitlines())
         error.extend(err.splitlines())
         
