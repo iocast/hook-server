@@ -39,10 +39,6 @@
 								<div>{{config["repos"][idx]["notification"]}}</div>
 							</li>
 							<li>
-								<div style="min-width: 170px;"><strong>Remote:</strong></div>
-								<div>{{re.sub("(?<=:)([^@:]+)(?=@[^@]+$)", "*****", config["repos"][idx]["remote"])}}</div>
-							</li>
-							<li>
 								<div style="min-width: 170px;"><strong>Branches:</strong></div>
 								<ul>
 									% for branch in config["repos"][idx]["branches"]:
