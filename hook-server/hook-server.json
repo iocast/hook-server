@@ -18,11 +18,14 @@
 			"template": "repo2_report.tpl",
 			"branches": {
 				"master": {
-					"local": "/opt/repos/repo1",
+					"local": "/opt/repos/repo2-master",
+					"post-script": "scripts/post-processing.sh"
+				},
+				"develop": {
+					"local": "/opt/repos/repo2-develop",
 					"post-script": "scripts/post-processing.sh"
 				}
 			}
 		}
-
 	}
 }
