@@ -125,9 +125,9 @@ Simply clone your private repository over **https** and add the password to the 
 
     From https://bitbucket.org/<user>/<repo>
       * branch            master     -> FETCH_HEAD
-       0a26dcf..97ed7c0  master     -> origin/master
+        0a26dcf..97ed7c0  master     -> origin/master
     error: Your local changes to the following files would be overwritten by merge:
-     zh/pics/logo_zh.png
+     destination/file.md
     Please, commit your changes or stash them before you can merge.
     Aborting
 
