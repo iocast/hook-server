@@ -169,5 +169,3 @@ and change the permissions back
 and depending on your server security also the permissions
 
     sudo chmod -R 775 .
-
-
