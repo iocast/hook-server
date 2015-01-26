@@ -118,3 +118,56 @@ Simply clone your private repository over **https** and add the password to the 
 	cd test-repo
 	git config remote.origin.url https://user:password@github.com/user/test-repo.git
 
+
+## Problems
+
+### getting error `commit your changes or stash them`
+
+    From https://bitbucket.org/<user>/<repo>
+      * branch            master     -> FETCH_HEAD
+       0a26dcf..97ed7c0  master     -> origin/master
+    error: Your local changes to the following files would be overwritten by merge:
+     zh/pics/logo_zh.png
+    Please, commit your changes or stash them before you can merge.
+    Aborting
+
+
+**resolution**
+
+1. first check on the local repository that everything is commited and pushed.
+2. check if erverything is on the server repository (on GitHub or Bitbucket)
+3. now login to the server and solve the conflicts by running the below commands
+
+**commands to proceed on the server**
+
+    cd /to/your/repo/
+
+do a `git pull` to check if problem still occurs
+
+    sudo git pull
+    > Updating ac52482..97ed7c0
+    > error: Your local changes to the following files would be overwritten by merge:
+    >         zh/pics/logo_zh.png
+    > Please, commit your changes or stash them before you can merge.
+    > Aborting
+
+do a revert to the latest `HEAD`
+
+    sudo git reset --hard HEAD
+    > HEAD is now at ac52482 no message
+    sudo git pull
+    > Updating ac52482..97ed7c0
+    > Fast-forward
+    > ...           |   7 ++++---
+    > ...           | Bin 2870 -> 85890 bytes
+    > 2 files changed, 4 insertions(+), 3 deletions(-)
+
+and change the permissions back
+
+    sudo chown -R www-data:www-data .
+
+and depending on your server security also the permissions
+
+    sudo chmod -R 775 .
+
+
