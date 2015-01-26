@@ -147,7 +147,7 @@ do a `git pull` to check if problem still occurs
     sudo git pull
     > Updating ac52482..97ed7c0
     > error: Your local changes to the following files would be overwritten by merge:
-    >         zh/pics/logo_zh.png
+    >         destination/file.md
     > Please, commit your changes or stash them before you can merge.
     > Aborting
 
